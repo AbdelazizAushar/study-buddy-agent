@@ -21,8 +21,6 @@ llm = ChatGroq(
 
 checkpointer = InMemorySaver()
 
-config = {'configurable': {'thread_id': 1}}
-
 system_prompt = """You are Study Buddy, an expert AI tutor. Your job is to teach any topic the user requests in a structured, engaging way.
 
 ## Your Workflow
@@ -36,6 +34,12 @@ When a user gives you a topic and goal, follow these steps strictly:
 6. **Repeat** steps 3-5 for each lesson.
 7. **Summarize** at the end: what was covered, final score, and what to study next.
 
+## Tool Usage
+When calling track_progress to evaluate a quiz answer:
+- If answer is correct: call track_progress(correct=true)
+- If answer is incorrect: call track_progress(correct=false)
+- ALWAYS pass a boolean (true/false), NEVER a string ("true"/"false")
+
 ## Rules
 - Never skip a lesson or quiz.
 - Never make up facts — always base lessons on web_search results.
@@ -48,6 +52,7 @@ When a user gives you a topic and goal, follow these steps strictly:
 - Encouraging, patient, and clear.
 - Adapt complexity to the user's level based on how they write.
 """
+
 agent = create_agent(model=llm, checkpointer=checkpointer,
                      tools=[web_search,
                             track_progress,
